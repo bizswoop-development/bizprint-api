@@ -1,0 +1,16 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "useTabs": true,
+  "importOrder": [
+    "<THIRD_PARTY_MODULES>",
+    "^@/resources/(.*)$",
+    "^@/utilities/(.*)$",
+    "^@/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}

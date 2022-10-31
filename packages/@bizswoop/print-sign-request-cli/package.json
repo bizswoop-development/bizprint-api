@@ -1,0 +1,13 @@
+{
+	"name": "@bizswoop/print-sign-request-cli",
+	"license": "MIT",
+	"version": "1.0.0",
+	"bin": "prepareRequest.mjs",
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"inquirer": "^8.2.4",
+		"@bizswoop/print-client": "^1.0.0"
+	}
+}

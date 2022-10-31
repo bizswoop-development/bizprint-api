@@ -1,0 +1,9 @@
+{
+  "name": "print-packages",
+  "private": true,
+  "engineStrict": true,
+  "workspaces": [
+    "./packages/@bizswoop/*"
+  ],
+  "packageManager": "npm@8.13.1"
+}
