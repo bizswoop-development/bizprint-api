@@ -1,6 +1,9 @@
+export const InvalidRequestErrorCode = 'ERR_INVALID_REQUEST';
+
 export abstract class InvalidRequestError<T> extends Error {
 	kind = 'InvalidRequestError';
 	errors: InvalidRequestErrorsInfo<T>;
+
 	constructor(message: string, errors) {
 		super(message);
 		this.errors = errors as InvalidRequestErrorsInfo<T>;

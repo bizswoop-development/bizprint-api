@@ -10,6 +10,7 @@ import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
 import { ErrorResponse } from '@/errors/ErrorResponse';
+import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
 
 import { Printer } from './Printer';
 import { PrintersListOptions } from './PrintersListOptions';
@@ -36,7 +37,7 @@ export default class Printers {
 				method: 'GET',
 				params: options
 			},
-			this.listError
+			this._listError
 		).then((response) => {
 			const printers = response.data.data as Printer[];
 			return wrapListResponse(response, printers);
@@ -50,7 +51,7 @@ export default class Printers {
 					method: 'GET',
 					params: options
 				},
-				this.listError
+				this._listError
 			).then((response) => {
 				const printers = response.data.data as Printer[];
 				return wrapListResponse(response, printers);
@@ -60,11 +61,11 @@ export default class Printers {
 		return Object.assign(result, iterator);
 	}
 
-	private listError(error) {
+	private _listError(error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
 			switch (data.errorCode) {
-				case 'ERR_INVALID_REQUEST':
+				case InvalidRequestErrorCode:
 					throw new PrintersListInvalidRequestError(data.message, data.errors);
 				default:
 					throw error;

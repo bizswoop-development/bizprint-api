@@ -27,6 +27,28 @@ describe('Stations', () => {
 		checkStationFields(allStations[0]);
 	});
 
+	it('should fetch all stations filtering, created at string', async () => {
+		let allStations = [];
+		for await (let stations of client.Stations.list({
+			createdAt: { gte: '2022-04-21T20:40:00.000Z' }
+		})) {
+			allStations = allStations.concat(stations.data);
+		}
+
+		expect(allStations.length).toBe(1);
+	});
+
+	it('should fetch all stations filtering, created at date', async () => {
+		let allStations = [];
+		for await (let stations of client.Stations.list({
+			createdAt: { gte: new Date('2022-04-21T20:40:00.000Z') }
+		})) {
+			allStations = allStations.concat(stations.data);
+		}
+
+		expect(allStations.length).toBe(1);
+	});
+
 	it('should fetch stations pagination by promise, page 2', async () => {
 		const stations = await client.Stations.list({ perPage: 1, page: 2 });
 		expect(stations.data.length).toBe(1);

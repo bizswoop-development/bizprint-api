@@ -7,14 +7,20 @@ import { wrapAsyncList } from '@/utilities/wrapAsyncList';
 import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
-import AccessForbiddenError from '@/errors/AccessForbiddenError';
 import { ErrorResponse } from '@/errors/ErrorResponse';
+import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
 
 import { Job } from './Job';
 import { JobCreateData } from './JobCreateData';
-import JobCreatingInvalidRequestError from './JobCreatingInvalidRequestError';
-import JobsListInvalidRequestError from './JobsListInvalidRequestError';
 import { JobsListOptions } from './JobsListOptions';
+import JobCreatingInvalidPrinterError, {
+	JobCreatingInvalidPrinterErrorCode
+} from './errors/JobCreatingInvalidPrinterError';
+import JobCreatingInvalidRequestError from './errors/JobCreatingInvalidRequestError';
+import JobCreatingPrintJobLimitError, {
+	JobCreatingPrintJobLimitErrorCode
+} from './errors/JobCreatingPrintJobLimitError';
+import JobsListInvalidRequestError from './errors/JobsListInvalidRequestError';
 
 export default class Jobs {
 	protected _resourceBaseUrl = 'jobs';
@@ -40,13 +46,15 @@ export default class Jobs {
 				const data = error.response?.data as ErrorResponse;
 
 				switch (data.errorCode) {
-					case 'ERR_ACCESS_FORBIDDEN':
-						throw new AccessForbiddenError(data.message);
-
-					case 'ERR_INVALID_REQUEST': {
+					case InvalidRequestErrorCode: {
 						throw new JobCreatingInvalidRequestError(data.message, data.errors);
 					}
-
+					case JobCreatingPrintJobLimitErrorCode: {
+						throw new JobCreatingPrintJobLimitError(data.message);
+					}
+					case JobCreatingInvalidPrinterErrorCode: {
+						throw new JobCreatingInvalidPrinterError(data.message);
+					}
 					default:
 						throw error;
 				}
@@ -73,7 +81,7 @@ export default class Jobs {
 				method: 'GET',
 				params: options
 			},
-			this.listError
+			this._listError
 		).then((response) => {
 			const jobs = response.data.data as Job[];
 			return wrapListResponse(response, jobs);
@@ -87,7 +95,7 @@ export default class Jobs {
 					method: 'GET',
 					params: options
 				},
-				this.listError
+				this._listError
 			).then((response) => {
 				const jobs = response.data.data as Job[];
 				return wrapListResponse(response, jobs);
@@ -97,11 +105,11 @@ export default class Jobs {
 		return Object.assign(result, iterator);
 	}
 
-	private listError(error) {
+	private _listError(error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
 			switch (data.errorCode) {
-				case 'ERR_INVALID_REQUEST':
+				case InvalidRequestErrorCode:
 					throw new JobsListInvalidRequestError(data.message, data.errors);
 				default:
 					throw error;

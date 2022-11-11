@@ -8,13 +8,13 @@ export type JobsListOptions = ApiListOptionsPagination &
 
 type JobsListOptionsDate = {
 	createdAt: {
-		gt: string;
+		gte: string | Date;
 	};
 };
 
 type JobsListOptionsId = {
 	id: {
-		gt: number;
+		gte: number;
 	};
 };
 

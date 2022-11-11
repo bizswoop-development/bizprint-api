@@ -12,13 +12,13 @@ export type PrintersListOptions = ApiListOptionsPagination &
 
 type PrintersListOptionsId = {
 	id: {
-		gt: number;
+		gte: number;
 	};
 };
 
 type PrintersListOptionsDate = {
 	createdAt: {
-		gt: string;
+		gte: string | Date;
 	};
 };
 

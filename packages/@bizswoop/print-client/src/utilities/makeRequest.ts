@@ -1,7 +1,10 @@
 import { AxiosInstance, default as axios } from 'axios';
 
+import AccessForbiddenError, { AccessForbiddenErrorCode } from '@/errors/AccessForbiddenError';
 import { ErrorResponse } from '@/errors/ErrorResponse';
-import UnauthorizedError from '@/errors/UnauthorizedError';
+import NotFoundError, { NotFoundErrorCode } from '@/errors/NotFoundError';
+import SomethingWrongError, { SomethingWrongErrorCode } from '@/errors/SomethingWrongError';
+import UnauthorizedError, { UnauthorizedErrorCode } from '@/errors/UnauthorizedError';
 
 const makeRequest = async (
 	httpClient: AxiosInstance,
@@ -29,8 +32,15 @@ const makeRequest = async (
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
-			if (data.errorCode === 'ERR_UNAUTHORIZED') {
-				throw new UnauthorizedError(data.message);
+			switch (data.errorCode) {
+				case AccessForbiddenErrorCode:
+					throw new AccessForbiddenError(data.message);
+				case SomethingWrongErrorCode:
+					throw new SomethingWrongError(data.message);
+				case UnauthorizedErrorCode:
+					throw new UnauthorizedError(data.message);
+				case NotFoundErrorCode:
+					throw new NotFoundError(data.message);
 			}
 		}
 

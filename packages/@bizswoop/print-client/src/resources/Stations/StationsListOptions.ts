@@ -5,12 +5,12 @@ export type StationsListOptions = ApiListOptionsPagination &
 
 type StationsListOptionsId = {
 	id: {
-		gt: number;
+		gte: number;
 	};
 };
 
 type StationsListOptionsDate = {
 	createdAt: {
-		gt: string;
+		gte: string | Date;
 	};
 };

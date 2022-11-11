@@ -8,6 +8,7 @@ import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
 import { ErrorResponse } from '@/errors/ErrorResponse';
+import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
 
 import { Station } from './Station';
 import StationsListInvalidRequestError from './StationsListInvalidRequestError';
@@ -35,7 +36,7 @@ export default class Stations {
 				method: 'GET',
 				params: options
 			},
-			this.listError
+			this._listError
 		).then((response) => {
 			const printers = response.data.data as Station[];
 			return wrapListResponse(response, printers);
@@ -49,7 +50,7 @@ export default class Stations {
 					method: 'GET',
 					params: options
 				},
-				this.listError
+				this._listError
 			).then((response) => {
 				const printers = response.data.data as Station[];
 				return wrapListResponse(response, printers);
@@ -59,11 +60,11 @@ export default class Stations {
 		return Object.assign(result, iterator);
 	}
 
-	private listError(error) {
+	private _listError(error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
 			switch (data.errorCode) {
-				case 'ERR_INVALID_REQUEST':
+				case InvalidRequestErrorCode:
 					throw new StationsListInvalidRequestError(data.message, data.errors);
 				default:
 					throw error;

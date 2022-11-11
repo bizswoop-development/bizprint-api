@@ -118,6 +118,28 @@ describe('Printers', () => {
 		expect(printers.data.length).toBe(5);
 	});
 
+	it('should fetch all printers filtering, created at string', async () => {
+		let allPrinters = [];
+		for await (let printers of client.Printers.list({
+			createdAt: { gte: '2022-05-10T17:23:12.000Z' }
+		})) {
+			allPrinters = allPrinters.concat(printers.data);
+		}
+
+		expect(allPrinters.length).toBe(9);
+	});
+
+	it('should fetch all printers filtering, created at date', async () => {
+		let allPrinters = [];
+		for await (let printers of client.Printers.list({
+			createdAt: { gte: new Date('2022-05-10T17:23:12.000Z') }
+		})) {
+			allPrinters = allPrinters.concat(printers.data);
+		}
+
+		expect(allPrinters.length).toBe(9);
+	});
+
 	it('should fetch specific printer', async () => {
 		const printer = await client.Printers.retrieve(1);
 

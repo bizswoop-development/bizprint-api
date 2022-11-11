@@ -16,7 +16,7 @@ type Protocol = 'http' | 'https';
 
 type BaseUrl = `${Protocol}://${string}/api/connect-application/v1/`;
 
-const defaultBaseUrl = 'https://print.bizswpdev.app/api/connect-application/v1/';
+const defaultBaseUrl = 'https://print.bizswoop.app/api/connect-application/v1/';
 
 type PrintClientConfig = {
 	baseUrl?: BaseUrl;
@@ -67,6 +67,7 @@ export default class PrintClient {
 					const { hash, time } = signPostData(config.data, this._auth.secretKey);
 					config.data.time = time;
 					config.data.hash = hash;
+					break;
 				}
 			}
 

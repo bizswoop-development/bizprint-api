@@ -1,24 +1,41 @@
-import { InvalidRequestErrorsInfo } from '@/errors/InvalidRequestError';
+import { JobCreatingErrorResponse } from '@/resources/Jobs/errors/JobCreatingErrorResponse';
+
+import { AccessForbiddenErrorCode } from '@/errors/AccessForbiddenError';
+import { InvalidRequestErrorCode, InvalidRequestErrorsInfo } from '@/errors/InvalidRequestError';
+import { NotFoundErrorCode } from '@/errors/NotFoundError';
+import { SomethingWrongErrorCode } from '@/errors/SomethingWrongError';
+import { UnauthorizedErrorCode } from '@/errors/UnauthorizedError';
 
 export type ErrorResponse =
 	| InvalidRequestErrorResponse
 	| AccessForbiddenErrorResponse
-	| UnauthorizedErrorResponse;
+	| UnauthorizedErrorResponse
+	| JobCreatingErrorResponse
+	| SomethingWrongErrorResponse
+	| NotFoundErrorResponse;
 
-interface BaseErrorResponse {
+export interface BaseErrorResponse {
 	errorCode: string;
 	message: string;
 }
 
 interface InvalidRequestErrorResponse extends BaseErrorResponse {
-	errorCode: 'ERR_INVALID_REQUEST';
+	errorCode: typeof InvalidRequestErrorCode;
 	errors: InvalidRequestErrorsInfo;
 }
 
 interface AccessForbiddenErrorResponse extends BaseErrorResponse {
-	errorCode: 'ERR_ACCESS_FORBIDDEN';
+	errorCode: typeof AccessForbiddenErrorCode;
 }
 
 interface UnauthorizedErrorResponse extends BaseErrorResponse {
-	errorCode: 'ERR_UNAUTHORIZED';
+	errorCode: typeof UnauthorizedErrorCode;
+}
+
+interface NotFoundErrorResponse extends BaseErrorResponse {
+	errorCode: typeof NotFoundErrorCode;
+}
+
+interface SomethingWrongErrorResponse extends BaseErrorResponse {
+	errorCode: typeof SomethingWrongErrorCode;
 }
