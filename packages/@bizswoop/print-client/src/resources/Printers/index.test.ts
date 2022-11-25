@@ -1,4 +1,6 @@
-import PrintersListInvalidRequestError from '@/resources/Printers/PrintersListInvalidRequestError';
+import PrintersListInvalidRequestError from './errors/PrintersListInvalidRequestError';
+import AccessForbiddenError from '@/errors/AccessForbiddenError';
+import NotFoundError from '@/errors/NotFoundError';
 
 import PrintClient from '@/PrintClient';
 
@@ -93,7 +95,7 @@ describe('Printers', () => {
 		expect(allPrinters.length).toBe(1);
 	});
 
-	it('should fetch printers, station id by in and notIn at the same time', async () => {
+	it('should fail fetch printers, station id by in and notIn at the same time', async () => {
 		try {
 			let allPrinters = [];
 			// @ts-ignore
@@ -147,16 +149,40 @@ describe('Printers', () => {
 
 		checkPrinterFields(printer);
 	});
+
+	it('should fail fetch specific printer, printer not found', async () => {
+		try {
+			await client.Printers.retrieve(500);
+		} catch (error) {
+			expect(error).toBeInstanceOf(NotFoundError);
+			expect(error.name).toBe('NotFoundError');
+		}
+	});
+
+	it('should fail fetch specific printer, access forbidden', async () => {
+		try {
+			await client.Printers.retrieve(15);
+		} catch (error) {
+			expect(error).toBeInstanceOf(AccessForbiddenError);
+			expect(error.name).toBe('AccessForbiddenError');
+		}
+	});
 });
 
 function checkPrinterFields(printer) {
-	expect(printer).toHaveProperty('id');
-	expect(printer).toHaveProperty('status');
-	expect(printer).toHaveProperty('name');
-	expect(printer).toHaveProperty('key');
-	expect(printer).toHaveProperty('station');
-	expect(printer.station).toHaveProperty('id');
-	expect(printer.station).toHaveProperty('name');
-	expect(printer).toHaveProperty('createdAt');
-	expect(printer).toHaveProperty('updatedAt');
+	expect(printer).toEqual(
+		expect.objectContaining({
+			id: expect.any(Number),
+			name: expect.any(String),
+			status: expect.any(String),
+			key: expect.any(String),
+			createdAt: expect.any(String),
+			updatedAt: expect.any(String),
+
+			station: expect.objectContaining({
+				id: expect.any(Number),
+				name: expect.any(String)
+			})
+		})
+	);
 }

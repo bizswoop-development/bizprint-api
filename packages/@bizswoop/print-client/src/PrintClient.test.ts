@@ -1,5 +1,6 @@
-import PrintClient from '@/PrintClient';
 import UnauthorizedError from '@/errors/UnauthorizedError';
+
+import PrintClient from '@/PrintClient';
 
 describe('PrintClient', () => {
 	it('should throw error for wrong auth', async function () {

@@ -7,11 +7,11 @@ import { wrapAsyncList } from '@/utilities/wrapAsyncList';
 import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
+import StationsListInvalidRequestError from './errors/StationsListInvalidRequestError';
 import { ErrorResponse } from '@/errors/ErrorResponse';
 import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
 
 import { Station } from './Station';
-import StationsListInvalidRequestError from './StationsListInvalidRequestError';
 import { StationsListOptions } from './StationsListOptions';
 
 export default class Stations {

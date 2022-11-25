@@ -7,12 +7,6 @@ import { wrapAsyncList } from '@/utilities/wrapAsyncList';
 import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
-import { ErrorResponse } from '@/errors/ErrorResponse';
-import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
-
-import { Job } from './Job';
-import { JobCreateData } from './JobCreateData';
-import { JobsListOptions } from './JobsListOptions';
 import JobCreatingInvalidPrinterError, {
 	JobCreatingInvalidPrinterErrorCode
 } from './errors/JobCreatingInvalidPrinterError';
@@ -21,6 +15,12 @@ import JobCreatingPrintJobLimitError, {
 	JobCreatingPrintJobLimitErrorCode
 } from './errors/JobCreatingPrintJobLimitError';
 import JobsListInvalidRequestError from './errors/JobsListInvalidRequestError';
+import { ErrorResponse } from '@/errors/ErrorResponse';
+import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
+
+import { Job } from './Job';
+import { JobCreateData } from './JobCreateData';
+import { JobsListOptions } from './JobsListOptions';
 
 export default class Jobs {
 	protected _resourceBaseUrl = 'jobs';

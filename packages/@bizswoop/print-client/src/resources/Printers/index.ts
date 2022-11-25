@@ -1,7 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 
-import PrintersListInvalidRequestError from '@/resources/Printers/PrintersListInvalidRequestError';
-
 import { ApiListPromise } from '@/utilities/ApiListPromise';
 import { ApiResponsePromise } from '@/utilities/ApiResponsePromise';
 import makeRequest from '@/utilities/makeRequest';
@@ -9,6 +7,7 @@ import { wrapAsyncList } from '@/utilities/wrapAsyncList';
 import { wrapListResponse } from '@/utilities/wrapListResponse';
 import { wrapResponse } from '@/utilities/wrapResponse';
 
+import PrintersListInvalidRequestError from './errors/PrintersListInvalidRequestError';
 import { ErrorResponse } from '@/errors/ErrorResponse';
 import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
 
