@@ -21,6 +21,8 @@
 
 Creates a new print client object with which you can manipulate and work with different Stations, Printers and Jobs instances.
 
+\[Verify and add details on how to create keys\].
+
 **Parameters**
 
 *   publicKey
@@ -35,6 +37,7 @@ Creates a new print client object with which you can manipulate and work with di
     *   required: false
 
 ```javascript
+// note: these are sample keys, and they are not valid for use
 const client = new PrintClient({
 	publicKey: 'c321430d35c6d425799db9f85a11d50b',
 	secretKey: '321430d35c6d425799db9f85a11d50b0'
