@@ -7,13 +7,58 @@
 
 ---
 
-### PrintClient instance
+### General request info:
 
-**Attributes**
+When making **GET** or **DELETE** request, along the way we are passing next query parameters:
 
-*   Jobs - instance of Jobs
-*   Printers - instance of Printers
-*   Stations - instance of Stations
+*   publicKey
+*   time
+*   hash
+
+We are getting hash and time from following function:
+
+```javascript
+const signGetData = (queryArgs: QueryArgs, secretKey): URLSearchParams => {
+	queryArgs = new URLSearchParams(queryArgs);
+	const time = `${Math.floor(Date.now() / 1000)}`;
+	queryArgs.set('time', time);
+	const hash = hashData(queryArgs.toString(), secretKey);
+	queryArgs.set('hash', hash);
+
+	return queryArgs;
+};
+```
+
+When making **PATCH**, **POST** or **PUT** request, along the way we are adding next body properties:
+
+*   publicKey
+*   time
+*   hash
+
+We are getting hash and time from following function:
+
+```javascript
+export const signPostData = <T>(data: T, secretKey: string): T & { time: number; hash: string } => {
+	const time = Math.floor(Date.now() / 1000);
+
+	const dataWithTime = {
+		...data,
+		time
+	};
+	const hash = hashData(dataWithTime, secretKey);
+	return { ...dataWithTime, hash } as T & { time: number; hash: string };
+};
+```
+
+---
+
+### PrintClient object
+
+**Properties**
+
+*   Jobs - interface to access job
+*   Printers - interface to access printer
+*   Stations - interface to access station
 
 ---
 
@@ -21,9 +66,9 @@
 
 Creates a new print client object with which you can manipulate and work with different Stations, Printers and Jobs instances.
 
-\[Verify and add details on how to create keys\].
+Note: for instruction of how to get publicKey and secretKey, please visit next url: https://getbizprint.com/quick-start-guide/#step-4
 
-**Parameters**
+**JSON Body**
 
 *   publicKey
     *   type: string
@@ -39,14 +84,14 @@ Creates a new print client object with which you can manipulate and work with di
 ```javascript
 // note: these are sample keys, and they are not valid for use
 const client = new PrintClient({
-	publicKey: 'c321430d35c6d425799db9f85a11d50b',
-	secretKey: '321430d35c6d425799db9f85a11d50b0'
+    publicKey: 'c321430d35c6d425799db9f85a11d50b',
+    secretKey: '321430d35c6d425799db9f85a11d50b0'
 });
 ```
 
 **Returns**
 
-The newly created _PrintClient_ object, if the call succeeds.
+The newly created object, which corresponds to this type.
 
 **Possible errors**
 
@@ -54,9 +99,9 @@ The newly created _PrintClient_ object, if the call succeeds.
 
 ---
 
-### Jobs instance
+### Jobs object
 
-**Attributes**
+**Properties**
 
 *   id - number
 *   description - string
@@ -72,15 +117,9 @@ The newly created _PrintClient_ object, if the call succeeds.
 
 Creates a job for a printer with passed parameters.
 
-**HTTP Request**
+**JSON Body**
 
-```plaintext
-POST https://print.bizswoop.app/api/connect-application/v1/jobs
-```
-
-**Parameters**
-
-Takes an object with the following properties: 
+An object with following properties: 
 
 *   printerId
     *   type: number
@@ -97,17 +136,17 @@ Takes an object with the following properties: 
 
 ```javascript
 const createJob = async () => {
-	const job = await client.Jobs.create({
-		printerId: 1,
-		description: 'Test job',
-		url: 'https://localhost:8000/order/35'
-	});
+    const job = await client.Jobs.create({
+        printerId: 1,
+        description: 'Test job',
+        url: 'https://localhost:8000/order/35'
+    });
 };
 ```
 
 **Returns**
 
-The newly created _Job_ object, if the call succeeded.
+The newly created object, which corresponds to this type.
 
 **Possible errors**
 
@@ -121,12 +160,6 @@ The newly created _Job_ object, if the call succeeded.
 
 Retrieves a job with a given ID.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/jobs/${ID}
-```
-
 **Parameters**
 
 *   id
@@ -135,13 +168,13 @@ GET https://print.bizswoop.app/api/connect-application/v1/jobs/${ID}
 
 ```javascript
 const getSingleJob = async () => {
-	const job = await client.Jobs.retrieve(1);
+    const job = await client.Jobs.retrieve(1);
 };
 ```
 
 **Returns**
 
-Returns a _Job_ object.
+Returns an object, which corresponds to this type.
 
 **Possible errors**
 
@@ -154,13 +187,7 @@ Returns a _Job_ object.
 
 Return a list of jobs.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/jobs
-```
-
-**Parameters**
+**Query Parameters**
 
 *   perPage
     *   type: number
@@ -175,7 +202,7 @@ We can get our list in two ways:
 
 ```javascript
 const getListOfJobs = await () => {
-	const jobs = await client.Jobs.list({ perPage: 10, page: 3 });
+    const jobs = await client.Jobs.list({ perPage: 10, page: 3 });
 };
 ```
 
@@ -183,10 +210,10 @@ const getListOfJobs = await () => {
 
 ```javascript
 const getListOfJobs = await () => {
-	let allJobs = [];
-	for await (let jobs of client.Jobs.list()) {
-		allJobs = allJobs.concat(jobs.data);
-	}
+    let allJobs = [];
+    for await (let jobs of client.Jobs.list()) {
+        allJobs = allJobs.concat(jobs.data);
+    }
 };
 ```
 
@@ -205,9 +232,9 @@ Returns an object with following properties:
 
 ---
 
-### Stations instance
+### Stations object
 
-**Attributes**
+**Properties**
 
 *   id - number
 *   name - string
@@ -220,12 +247,6 @@ Returns an object with following properties:
 
 Retrieves a station with a given ID.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/stations/${ID}
-```
-
 **Parameters**
 
 *   id
@@ -234,13 +255,13 @@ GET https://print.bizswoop.app/api/connect-application/v1/stations/${ID}
 
 ```javascript
 const getSingleStation = async () => {
-	const station = await client.Stations.retrieve(1);
+    const station = await client.Stations.retrieve(1);
 };
 ```
 
 **Returns**
 
-Returns a _Station_ object.
+Returns an object, which corresponds to this type.
 
 **Possible errors**
 
@@ -253,13 +274,7 @@ Returns a _Station_ object.
 
 Return a list of stations.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/stations
-```
-
-**Parameters**
+**Query Parameters**
 
 *   perPage
     *   type: number
@@ -274,7 +289,7 @@ We can get our list in two ways:
 
 ```javascript
 const getListOfStations = await () => {
-	const stations = await client.Stations.list({ perPage: 1 });
+    const stations = await client.Stations.list({ perPage: 1 });
 };
 ```
 
@@ -282,10 +297,10 @@ const getListOfStations = await () => {
 
 ```javascript
 const getListOfStations = await () => {
-	let allStations = [];
-	for await (const stations of client.Stations.list()) {
-		allStations = allStations.concat(stations.data);
-	}
+    let allStations = [];
+    for await (const stations of client.Stations.list()) {
+        allStations = allStations.concat(stations.data);
+    }
 };
 ```
 
@@ -304,9 +319,9 @@ Returns an object with following properties:
 
 ---
 
-### Printers instance
+### Printers object
 
-**Attributes**
+**Properties**
 
 *   id - number
 *   name - string
@@ -324,12 +339,6 @@ Returns an object with following properties:
 
 Retrieves a printer with a given ID.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/printers/${ID}
-```
-
 **Parameters**
 
 *   id
@@ -338,13 +347,13 @@ GET https://print.bizswoop.app/api/connect-application/v1/printers/${ID}
 
 ```javascript
 const getSinglePrinter = async () => {
-	const printer = await client.Printers.retrieve(1);
+    const printer = await client.Printers.retrieve(1);
 };
 ```
 
 **Returns**
 
-Returns a _Printer_ object.
+Returns an object, which corresponds to this type.
 
 **Possible errors**
 
@@ -357,13 +366,7 @@ Returns a _Printer_ object.
 
 Return a list of printers.
 
-**HTTP Request**
-
-```plaintext
-GET https://print.bizswoop.app/api/connect-application/v1/printers
-```
-
-**Parameters**
+**Query Parameters**
 
 *   perPage
     *   type: number
@@ -378,7 +381,7 @@ We can get our list in two ways:
 
 ```javascript
 const getListOfPrinters = await () => {
-	const printers = await client.Printers.list();
+    const printers = await client.Printers.list();
 };
 ```
 
@@ -386,10 +389,10 @@ const getListOfPrinters = await () => {
 
 ```javascript
 const getListOfPrinters = await () => {
-	let allPrinters = [];
-	for await (const printers of client.Printers.list()) {
-		allPrinters = allPrinters.concat(printers.data);
-	}
+    let allPrinters = [];
+    for await (const printers of client.Printers.list()) {
+        allPrinters = allPrinters.concat(printers.data);
+    }
 };
 ```
 
