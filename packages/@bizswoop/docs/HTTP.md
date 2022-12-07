@@ -20,7 +20,7 @@ When making **GET** or **DELETE** request, along the way we are passing next que
 *   time
 *   hash
 
-We are getting hash and time from following function:
+We are getting hash and time from next function:
 
 ```javascript
 const signGetData = (queryArgs: QueryArgs, secretKey): URLSearchParams => {
@@ -40,7 +40,7 @@ When making **PATCH**, **POST** or **PUT** request, along the way we are adding 
 *   time
 *   hash
 
-We are getting hash and time from following function:
+We are getting hash and time from next function:
 
 ```javascript
 export const signPostData = <T>(data: T, secretKey: string): T & { time: number; hash: string } => {
@@ -57,56 +57,17 @@ export const signPostData = <T>(data: T, secretKey: string): T & { time: number;
 
 ---
 
-### PrintClient object
+### Job object
 
 **Properties**
 
-*   Jobs - interface to access job
-*   Printers - interface to access printer
-*   Stations - interface to access station
-
----
-
-### Creating an instance of PrintClient
-
-Creates a new print client object with which you can manipulate and work with different Stations, Printers and Jobs instances.
-
-Note: for instruction of how to get publicKey and secretKey, please visit next url: https://getbizprint.com/quick-start-guide/#step-4
-
-**JSON Body**
-
-*   publicKey
-    *   type: string
-    *   required: true
-*   secretKey
-    *   type: string
-    *   required: true
-*   baseUrl
-    *   type: \`${'http' | 'https'}://${string}/api/connect-application/v1/\`
-    *   default: ‘https://print.bizswoop.app/api/connect-application/v1/’
-    *   required: false
-
-**Returns**
-
-The newly created object, which corresponds to this type.
-
-**Possible errors**
-
-*   ERR\_UNAUTHORIZED - can be throws in case of a wrong publickKey or secretKey.
-
----
-
-### Jobs object
-
-**Properties**
-
-*   id - number
-*   description - string
-*   status - ‘pending’ | ‘processing’ | ‘done’ | ‘failed’ | ‘connecting-to-printer’ | ‘archived’
-*   url - string
-*   printerId - number
-*   createdAt - string
-*   updatedAt - string
+*   id – number
+*   description – string
+*   status – ‘pending’ | ‘processing’ | ‘done’ | ‘failed’ | ‘connecting-to-printer’ | ‘archived’
+*   url – string
+*   printerId – number
+*   createdAt – string
+*   updatedAt – string
 
 ---
 
@@ -139,13 +100,25 @@ An object with following properties: 
 
 **Returns**
 
-The newly created object, which corresponds to this type.
+Returns JSON object with following properties:
+
+*   data – an object, which corresponds to this type.
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST - can be thrown due to the missing of some required parameters, or due to the url being invalid.
-*   ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT - can be thrown out as a result of exceeding the print limit.
-*   ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID - can be thrown due to trying to create a job on printer that doesn't exist or that you don't have access to.
+*   ERR\_INVALID\_REQUEST
+    *   status: 400
+    *   message: ‘Invalid request fields: ${a list of invalid fields}’
+    *   errors: In this errors object you will see what field is incorrect and why.
+*   ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT
+    *   status: 400
+    *   message: ‘Reached print limit’
+*   ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID
+    *   status: 403
+    *   message: ‘Invalid printer ID’
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
@@ -167,12 +140,21 @@ GET https://print.bizswoop.app/api/connect-application/v1/jobs/${ID}
 
 **Returns**
 
-Returns an object, which corresponds to this type.
+Returns JSON object with following properties:
+
+*   data – an object, which corresponds to this type.
 
 **Possible errors**
 
-*   ERR\_NOT\_FOUND - trying to retrieve a job that doesn't exist.
-*   ERR\_ACCESS\_FORBIDDEN - you are not authorized to access this job.
+*   ERR\_ACCESS\_FORBIDDEN
+    *   status: 403
+    *   message: ‘You are not authorized to access this job’
+*   ERR\_NOT\_FOUND
+    *   status: 404
+    *   message: ‘Job not found’
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
@@ -197,27 +179,36 @@ GET https://print.bizswoop.app/api/connect-application/v1/jobs?perPage=10&page=3
 
 **Returns**
 
-Returns an object with following properties:
+Returns JSON object with following properties:
 
-*   data - contains a list of jobs.
-*   hasMore - boolean.
-*   totalAll - number.
-*   totalPages - number.
+*   data – contains a list of jobs.
+
+In header we are passing as well next properties:
+
+*   X-Biz-Has-More –  boolean value whether we have more jobs to return.
+*   X-Biz-Total-All – total number of jobs that we have.
+*   X-Biz-Total-Pages – total number of pages.
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST - occurs when wrong parameter gets passed.
+*   ERR\_INVALID\_REQUEST
+    *   status: 400
+    *   message: ‘Invalid request fields: ${a list of invalid fields}’
+    *   errors: In this errors object you will see what fields are incorrect and why.
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
-### Stations object
+### Station object
 
 **Properties**
 
-*   id - number
-*   name - string
-*   createdAt - string
-*   updatedAt - string
+*   id – number
+*   name – string
+*   createdAt – string
+*   updatedAt – string
 
 ---
 
@@ -239,12 +230,21 @@ GET https://print.bizswoop.app/api/connect-application/v1/stations/${ID}
 
 **Returns**
 
-Returns an object, which corresponds to this type.
+Returns JSON object with following properties:
+
+*   data – an object, which corresponds to this type.
 
 **Possible errors**
 
-*   ERR\_NOT\_FOUND - trying to retrieve a station that doesn't exist.
-*   ERR\_ACCESS\_FORBIDDEN - you are not authorized to access this station.
+*   ERR\_ACCESS\_FORBIDDEN
+    *   status: 403
+    *   message: ‘You are not authorized to access this printer’
+*   ERR\_NOT\_FOUND
+    *   status: 404
+    *   message: ‘Station not found’
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
@@ -269,32 +269,41 @@ GET https://print.bizswoop.app/api/connect-application/v1/stations?perPage=1
 
 **Returns**
 
-Returns an object with following properties:
+Returns JSON object with following properties:
 
-*   data - contains a list of stations.
-*   hasMore - boolean.
-*   totalAll - number.
-*   totalPages - number.
+*   data – contains a list of stations.
+
+In header we are passing as well next properties:
+
+*   X-Biz-Has-More –  boolean value whether we have more stations to return.
+*   X-Biz-Total-All – total number of stations that we have.
+*   X-Biz-Total-Pages – total number of pages.
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST - occurs when wrong parameter gets passed.
+*   ERR\_INVALID\_REQUEST
+    *   status: 400
+    *   message: ‘Invalid request fields: ${a list of invalid fields}’
+    *   errors: In this errors object you will see what fields are incorrect and why.
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
-### Printers object
+### Printer object
 
 **Properties**
 
-*   id - number
-*   name - string
-*   key - string
-*   status - ‘online’ | ‘offline’
-*   station - object
-    *   id - number
-    *   name - string
-*   createdAt - string
-*   updatedAt - string
+*   id – number
+*   name – string
+*   key – string
+*   status – ‘online’ | ‘offline’
+*   station – object
+    *   id – number
+    *   name – string
+*   createdAt – string
+*   updatedAt – string
 
 ---
 
@@ -316,12 +325,21 @@ GET https://print.bizswoop.app/api/connect-application/v1/printers/${ID}
 
 **Returns**
 
-Returns an object, which corresponds to this type.
+Returns JSON object with following properties:
+
+*   data – an object, which corresponds to this type.
 
 **Possible errors**
 
-*   ERR\_NOT\_FOUND - trying to retrieve a printer that doesn't exist.
-*   ERR\_ACCESS\_FORBIDDEN - you are not authorized to access this printer.
+*   ERR\_ACCESS\_FORBIDDEN
+    *   status: 403
+    *   message: ‘You are not authorized to access this printer’
+*   ERR\_NOT\_FOUND
+    *   status: 404
+    *   message: ‘Printer not found’
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’
 
 ---
 
@@ -346,24 +364,22 @@ GET https://print.bizswoop.app/api/connect-application/v1/printers?perPage=5&pag
 
 **Returns**
 
-Returns an object with following properties:
+Returns JSON object with following properties:
 
-*   data - contains a list of printers.
-*   hasMore - boolean.
-*   totalAll - number.
-*   totalPages - number.
+*   data – contains a list of printers.
+
+In header we are passing as well next properties:
+
+*   X-Biz-Has-More –  boolean value whether we have more printers to return.
+*   X-Biz-Total-All – total number of printers that we have.
+*   X-Biz-Total-Pages – total number of pages.
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST - occurs when wrong parameter gets passed.
-
----
-
-### General errors
-
-Errors that may occur for any api request.
-
-*   ERR\_ACCESS\_FORBIDDEN - you don't have access to make this request.
-*   ERR\_SOMETHING\_WRONG - something went wrong.
-*   ERR\_UNAUTHORIZED - you are not authorized to make this request.
-*   ERR\_NOT\_FOUND - there is no such request.
+*   ERR\_INVALID\_REQUEST
+    *   status: 400
+    *   message: ‘Invalid request fields: ${a list of invalid fields}’
+    *   errors: In this errors object you will see what fields are incorrect and why.
+*   ERR\_SOMETHING\_WRONG
+    *   status: 500
+    *   message: ‘Something wrong’

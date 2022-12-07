@@ -7,51 +7,6 @@
 
 ---
 
-### General request info:
-
-When making **GET** or **DELETE** request, along the way we are passing next query parameters:
-
-*   publicKey
-*   time
-*   hash
-
-We are getting hash and time from following function:
-
-```javascript
-const signGetData = (queryArgs: QueryArgs, secretKey): URLSearchParams => {
-	queryArgs = new URLSearchParams(queryArgs);
-	const time = `${Math.floor(Date.now() / 1000)}`;
-	queryArgs.set('time', time);
-	const hash = hashData(queryArgs.toString(), secretKey);
-	queryArgs.set('hash', hash);
-
-	return queryArgs;
-};
-```
-
-When making **PATCH**, **POST** or **PUT** request, along the way we are adding next body properties:
-
-*   publicKey
-*   time
-*   hash
-
-We are getting hash and time from following function:
-
-```javascript
-export const signPostData = <T>(data: T, secretKey: string): T & { time: number; hash: string } => {
-	const time = Math.floor(Date.now() / 1000);
-
-	const dataWithTime = {
-		...data,
-		time
-	};
-	const hash = hashData(dataWithTime, secretKey);
-	return { ...dataWithTime, hash } as T & { time: number; hash: string };
-};
-```
-
----
-
 ### PrintClient object
 
 **Properties**
@@ -150,7 +105,7 @@ The newly created object, which corresponds to this type.
 
 **Possible errors**
 
-*   JobCreatingInvalidRequestError - can be thrown due to the missing of some required parameters, or due to the url being invalid.
+*   JobCreatingInvalidRequestError - can be thrown due to the missing of some required parameters, or due to some parameters being invalid.
 *   JobCreatingPrintJobLimitError - can be thrown out as a result of exceeding the print limit.
 *   JobCreatingInvalidPrinterError - can be thrown due to trying to create a job on printer that doesn't exist or that you don't have access to.
 
