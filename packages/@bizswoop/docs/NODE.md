@@ -31,10 +31,6 @@ Note: for instruction of how to get publicKey and secretKey, please visit next u
 *   secretKey
     *   type: string
     *   required: true
-*   baseUrl
-    *   type: \`${'http' | 'https'}://${string}/api/connect-application/v1/\`
-    *   default: ‘https://print.bizswoop.app/api/connect-application/v1/’
-    *   required: false
 
 ```javascript
 // note: these are sample keys, and they are not valid for use
@@ -58,13 +54,27 @@ The newly created object, which corresponds to this type.
 
 **Properties**
 
-*   id - number
-*   description - string
-*   status - ‘pending’ | ‘processing’ | ‘done’ | ‘failed’ | ‘connecting-to-printer’ | ‘archived’
-*   url - string
-*   printerId - number
-*   createdAt - string
-*   updatedAt - string
+See TypeScript definition of Jobs object properties:
+
+```javascript
+export type Jobs = {
+    id: number;
+    description: string;
+    status: JobStatus;
+    url: string;
+    printerId: number;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type JobStatus =
+    | 'pending'
+    | 'processing'
+    | 'done'
+    | 'failed'
+    | 'connecting-to-printer'
+    | 'archived';
+```
 
 ---
 
@@ -191,10 +201,16 @@ Returns an object with following properties:
 
 **Properties**
 
-*   id - number
-*   name - string
-*   createdAt - string
-*   updatedAt - string
+See TypeScript definition of Stations object properties:
+
+```javascript
+export type Stations = {
+	id: number;
+	name: string;
+	createdAt: string;
+	updatedAt: string;
+};
+```
 
 ---
 
@@ -278,15 +294,22 @@ Returns an object with following properties:
 
 **Properties**
 
-*   id - number
-*   name - string
-*   key - string
-*   status - ‘online’ | ‘offline’
-*   station - object
-    *   id - number
-    *   name - string
-*   createdAt - string
-*   updatedAt - string
+See TypeScript definition of Printers object properties:
+
+```javascript
+export type Printers = {
+	id: number;
+	name: string;
+	key: string;
+	status: 'online' | 'offline';
+	station: {
+		id: number;
+		name: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+};
+```
 
 ---
 
@@ -368,7 +391,7 @@ Returns an object with following properties:
 
 ### General errors
 
-Errors that may occur for any api request.
+Errors that might occur for any api request:
 
 *   AccessForbiddenError - you don't have access to make this request.
 *   SomethingWrongError - something went wrong.

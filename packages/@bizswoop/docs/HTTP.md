@@ -9,11 +9,6 @@
 
 ### General request info:
 
-For requests that contain JSON body it is required to pass along in Header:
-
-*   key: Content-Type
-*   value: application/json
-
 When making **GET** or **DELETE** request, along the way we are passing next query parameters:
 
 *   publicKey
@@ -23,11 +18,18 @@ When making **GET** or **DELETE** request, along the way we are passing next que
 We are getting hash and time from next function:
 
 ```javascript
-const signGetData = (queryArgs: QueryArgs, secretKey): URLSearchParams => {
+const hashData = (queryArgs, secretKey) => {
+    return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
+};
+
+const signGetData = (queryArgs, keys) => {
     queryArgs = new URLSearchParams(queryArgs);
     const time = `${Math.floor(Date.now() / 1000)}`;
     queryArgs.set('time', time);
-    const hash = hashData(queryArgs.toString(), secretKey);
+    if (!queryArgs.has('publicKey')) {
+    	queryArgs.set('publicKey', keys.publicKey);
+    }
+    const hash = hashData(queryArgs.toString(), keys.secretKey);
     queryArgs.set('hash', hash);
 
     return queryArgs;
@@ -40,18 +42,28 @@ When making **PATCH**, **POST** or **PUT** request, along the way we are adding 
 *   time
 *   hash
 
+And it is also required to pass along in Header:
+
+*   key: Content-Type
+*   value: application/json
+
 We are getting hash and time from next function:
 
 ```javascript
-export const signPostData = <T>(data: T, secretKey: string): T & { time: number; hash: string } => {
+const hashData = (queryArgs, secretKey) => {
+    return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
+};
+
+export const signPostData = (data, keys) => {
     const time = Math.floor(Date.now() / 1000);
 
-    const dataWithTime = {
+    const dataWithAdditionalParams = {
         ...data,
-        time
+        publicKey: keys.publicKey,
+        time,
     };
-    const hash = hashData(dataWithTime, secretKey);
-    return { ...dataWithTime, hash } as T & { time: number; hash: string };
+    const hash = hashData(dataWithAdditionalParams, keys.secretKey);
+    return { ...dataWithAdditionalParams, hash };
 };
 ```
 
@@ -95,7 +107,7 @@ An object with following properties: 
     *   type: string
     *   required: true
 *   printOption:
-    *   type: object
+    *   type: object | string(JSON)
     *   required: false
 
 **Returns**
@@ -106,17 +118,29 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST
+*   ERR\_INVALID\_REQUEST – errorCode
     *   status: 400
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
-    *   errors: In this errors object you will see what field is incorrect and why.
-*   ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT
+    *   errors: In this errors object you will see what field is incorrect and why. Example:
+
+```javascript
+{
+    "status": 400,
+    "message": "Invalid request fields: url, description",
+    "errors": {
+        "url": ["Url must be a valid URL"],
+        "description":["Description is a required field"]
+    }
+}
+```
+
+*   ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT – errorCode
     *   status: 400
     *   message: ‘Reached print limit’
-*   ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID
+*   ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID – errorCode
     *   status: 403
     *   message: ‘Invalid printer ID’
-*   ERR\_SOMETHING\_WRONG
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -146,13 +170,13 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN
+*   ERR\_ACCESS\_FORBIDDEN – errorCode
     *   status: 403
     *   message: ‘You are not authorized to access this job’
-*   ERR\_NOT\_FOUND
+*   ERR\_NOT\_FOUND – errorCode
     *   status: 404
     *   message: ‘Job not found’
-*   ERR\_SOMETHING\_WRONG
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -191,11 +215,23 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST
+*   ERR\_INVALID\_REQUEST – errorCode
     *   status: 400
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
-    *   errors: In this errors object you will see what fields are incorrect and why.
-*   ERR\_SOMETHING\_WRONG
+    *   errors: In this errors object you will see what fields are incorrect and why. Example:
+
+```javascript
+{
+    "status": 400,
+    "message": "Invalid request fields: page, perPage",
+    "errors": {
+        "page": ["Page must be greater than or equal to 1"],
+        "perPage":["Per Page must be less than or equal to 100"]
+    }
+}
+```
+
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -236,13 +272,13 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN
+*   ERR\_ACCESS\_FORBIDDEN – errorCode
     *   status: 403
     *   message: ‘You are not authorized to access this printer’
-*   ERR\_NOT\_FOUND
+*   ERR\_NOT\_FOUND – errorCode
     *   status: 404
     *   message: ‘Station not found’
-*   ERR\_SOMETHING\_WRONG
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -281,11 +317,22 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST
+*   ERR\_INVALID\_REQUEST – errorCode
     *   status: 400
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
-    *   errors: In this errors object you will see what fields are incorrect and why.
-*   ERR\_SOMETHING\_WRONG
+    *   errors: In this errors object you will see what fields are incorrect and why. Example:
+
+```javascript
+{
+    "status": 400,
+    "message": "Invalid request fields: page",
+    "errors": {
+        "page": ["Must be a number"]
+    }
+}
+```
+
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -331,13 +378,13 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN
+*   ERR\_ACCESS\_FORBIDDEN – errorCode
     *   status: 403
     *   message: ‘You are not authorized to access this printer’
-*   ERR\_NOT\_FOUND
+*   ERR\_NOT\_FOUND – errorCode
     *   status: 404
     *   message: ‘Printer not found’
-*   ERR\_SOMETHING\_WRONG
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
 
@@ -376,10 +423,40 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST
+*   ERR\_INVALID\_REQUEST – errorCode
     *   status: 400
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
-    *   errors: In this errors object you will see what fields are incorrect and why.
-*   ERR\_SOMETHING\_WRONG
+    *   errors: In this errors object you will see what fields are incorrect and why. Example:
+
+```javascript
+{
+    "status": 400,
+    "message": "Invalid request fields: perPage",
+    "errors": {
+        "perPage": ["Must be a number"]
+    }
+}
+```
+
+*   ERR\_SOMETHING\_WRONG – errorCode
     *   status: 500
     *   message: ‘Something wrong’
+
+---
+
+### General errors
+
+Errors that might occur for any api request:
+
+*   ERR\_ACCESS\_FORBIDDEN - errorCode.
+    *   status: 403
+    *   reason: You don't have access to make this request.
+*   ERR\_SOMETHING\_WRONG - errorCode.
+    *   status: 500
+    *   reason: Something went wrong.
+*   ERR\_UNAUTHORIZED - errorCode.
+    *   status: 401
+    *   reason: You are not authorized to make this request.
+*   ERR\_NOT\_FOUND - errorCode.
+    *   status: 404
+    *   reason: There is no such request.
