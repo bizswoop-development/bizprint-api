@@ -14,20 +14,24 @@ We are getting hash and time from next function:
 
 ```javascript
 const hashData = (queryArgs, secretKey) => {
-    return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
+	return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
 };
 
-const signGetData = (queryArgs, keys) => {
-    queryArgs = new URLSearchParams(queryArgs);
-    const time = `${Math.floor(Date.now() / 1000)}`;
-    queryArgs.set('time', time);
-    if (!queryArgs.has('publicKey')) {
-    	queryArgs.set('publicKey', keys.publicKey);
-    }
-    const hash = hashData(queryArgs.toString(), keys.secretKey);
-    queryArgs.set('hash', hash);
+export const signGetData = (
+queryArgs,
+ publicKey,
+ secretKey
+) => {
+	queryArgs = new URLSearchParams(queryArgs);
+	const time = `${Math.floor(Date.now() / 1000)}`;
 
-    return queryArgs;
+	queryArgs.set('publicKey', publicKey);
+	queryArgs.set('time', time);
+
+	const hash = hashData(queryArgs.toString(), secretKey);
+	queryArgs.set('hash', hash);
+
+	return queryArgs;
 };
 ```
 
@@ -45,20 +49,26 @@ And it is also required to pass along in Header:
 We are getting hash and time from next function:
 
 ```javascript
-const hashData = (queryArgs, secretKey) => {
-    return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
+const hashData = (data, secretKey) => {
+	const json = JSON.stringify(data);
+
+	return createHash('sha256').update(`${json}:${secretKey}`).digest('hex');
 };
 
-export const signPostData = (data, keys) => {
-    const time = Math.floor(Date.now() / 1000);
+export const signPostData = (
+data,
+ publicKey,
+ secretKey
+) => {
+	const time = Math.floor(Date.now() / 1000);
 
-    const dataWithAdditionalParams = {
-        ...data,
-        publicKey: keys.publicKey,
-        time,
-    };
-    const hash = hashData(dataWithAdditionalParams, keys.secretKey);
-    return { ...dataWithAdditionalParams, hash };
+	const dataToSign = {
+		...data,
+		publicKey,
+		time
+	};
+	const hash = hashData(dataToSign, secretKey);
+	return { ...dataToSign, hash };
 };
 ```
 

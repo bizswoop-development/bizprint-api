@@ -6,10 +6,17 @@ const hashData = (queryArgs, secretKey) => {
 	return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
 };
 
-export const signGetData = (queryArgs: QueryArgs, secretKey): URLSearchParams => {
+export const signGetData = (
+	queryArgs: QueryArgs,
+	publicKey: string,
+	secretKey: string
+): URLSearchParams => {
 	queryArgs = new URLSearchParams(queryArgs);
 	const time = `${Math.floor(Date.now() / 1000)}`;
+
+	queryArgs.set('publicKey', publicKey);
 	queryArgs.set('time', time);
+
 	const hash = hashData(queryArgs.toString(), secretKey);
 	queryArgs.set('hash', hash);
 
