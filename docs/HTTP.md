@@ -1,9 +1,4 @@
-## Print Backend API docs
-
-**Available functionality**
-
-*   Job creation
-*   possibility to retrieve either one or a list of jobs/stations/printers
+## HTTP Print Backend API docs
 
 ---
 
