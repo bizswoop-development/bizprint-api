@@ -17,11 +17,7 @@ const hashData = (queryArgs, secretKey) => {
 	return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
 };
 
-export const signGetData = (
-queryArgs,
- publicKey,
- secretKey
-) => {
+export const signGetData = (queryArgs, publicKey, secretKey) => {
 	queryArgs = new URLSearchParams(queryArgs);
 	const time = `${Math.floor(Date.now() / 1000)}`;
 
@@ -55,11 +51,7 @@ const hashData = (data, secretKey) => {
 	return createHash('sha256').update(`${json}:${secretKey}`).digest('hex');
 };
 
-export const signPostData = (
-data,
- publicKey,
- secretKey
-) => {
+export const signPostData = (data, publicKey, secretKey) => {
 	const time = Math.floor(Date.now() / 1000);
 
 	const dataToSign = {
