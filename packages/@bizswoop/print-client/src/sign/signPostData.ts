@@ -6,15 +6,20 @@ const hashData = (data, secretKey) => {
 	return createHash('sha256').update(`${json}:${secretKey}`).digest('hex');
 };
 
-export const signPostData = <T>(data: T, secretKey: string): T & { time: number; hash: string } => {
+export const signPostData = <T>(
+	data: T,
+	publicKey: string,
+	secretKey: string
+): T & { publicKey: string; time: number; hash: string } => {
 	const time = Math.floor(Date.now() / 1000);
 
-	const dataWithTime = {
+	const dataToSign = {
 		...data,
+		publicKey,
 		time
 	};
-	const hash = hashData(dataWithTime, secretKey);
-	return { ...dataWithTime, hash } as T & { time: number; hash: string };
+	const hash = hashData(dataToSign, secretKey);
+	return { ...dataToSign, hash } as T & { publicKey: string; time: number; hash: string };
 };
 
 export const validatePostData = ({ hash, ...data }, secretKey) => {

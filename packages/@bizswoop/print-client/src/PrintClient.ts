@@ -52,9 +52,13 @@ export default class PrintClient {
 				case 'get':
 				case 'delete': {
 					if (!config.params) config.params = {};
-					config.params.publicKey = this._auth.publicKey;
 					const url = new URL(axios.getUri(config));
-					const signedUrlParams = signGetData(url.searchParams, this._auth.secretKey);
+					const signedUrlParams = signGetData(
+						url.searchParams,
+						this._auth.publicKey,
+						this._auth.secretKey
+					);
+					config.params.publicKey = signedUrlParams.get('publicKey');
 					config.params.time = signedUrlParams.get('time');
 					config.params.hash = signedUrlParams.get('hash');
 					break;
@@ -64,7 +68,11 @@ export default class PrintClient {
 				case 'put': {
 					if (!config.data) config.data = {};
 					config.data.publicKey = this._auth.publicKey;
-					const { hash, time } = signPostData(config.data, this._auth.secretKey);
+					const { hash, time } = signPostData(
+						config.data,
+						this._auth.publicKey,
+						this._auth.secretKey
+					);
 					config.data.time = time;
 					config.data.hash = hash;
 					break;
