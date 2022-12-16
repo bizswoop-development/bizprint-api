@@ -39,10 +39,6 @@ const client = new PrintClient({
 
 The newly created object, which corresponds to this type.
 
-**Possible errors**
-
-*   UnauthorizedError - can be throws in case of a wrong publickKey or secretKey.
-
 ---
 
 ### Jobs object
@@ -200,10 +196,10 @@ See TypeScript definition of Stations object properties:
 
 ```javascript
 export type Stations = {
-	id: number;
-	name: string;
-	createdAt: string;
-	updatedAt: string;
+    id: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
 };
 ```
 
@@ -293,16 +289,16 @@ See TypeScript definition of Printers object properties:
 
 ```javascript
 export type Printers = {
-	id: number;
-	name: string;
-	key: string;
-	status: 'online' | 'offline';
-	station: {
-		id: number;
-		name: string;
-	};
-	createdAt: string;
-	updatedAt: string;
+    id: number;
+    name: string;
+    key: string;
+    status: 'online' | 'offline';
+    station: {
+        id: number;
+        name: string;
+    };
+    createdAt: string;
+    updatedAt: string;
 };
 ```
 

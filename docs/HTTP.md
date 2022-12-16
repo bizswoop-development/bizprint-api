@@ -14,20 +14,20 @@ We are getting hash and time from next function:
 
 ```javascript
 const hashData = (queryArgs, secretKey) => {
-	return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
+    return createHash('sha256').update(`${queryArgs.toString()}:${secretKey}`).digest('hex');
 };
 
 export const signGetData = (queryArgs, publicKey, secretKey) => {
-	queryArgs = new URLSearchParams(queryArgs);
-	const time = `${Math.floor(Date.now() / 1000)}`;
+    queryArgs = new URLSearchParams(queryArgs);
+    const time = `${Math.floor(Date.now() / 1000)}`;
 
-	queryArgs.set('publicKey', publicKey);
-	queryArgs.set('time', time);
+    queryArgs.set('publicKey', publicKey);
+    queryArgs.set('time', time);
 
-	const hash = hashData(queryArgs.toString(), secretKey);
-	queryArgs.set('hash', hash);
+    const hash = hashData(queryArgs.toString(), secretKey);
+    queryArgs.set('hash', hash);
 
-	return queryArgs;
+    return queryArgs;
 };
 ```
 
@@ -46,21 +46,21 @@ We are getting hash and time from next function:
 
 ```javascript
 const hashData = (data, secretKey) => {
-	const json = JSON.stringify(data);
+    const json = JSON.stringify(data);
 
-	return createHash('sha256').update(`${json}:${secretKey}`).digest('hex');
+    return createHash('sha256').update(`${json}:${secretKey}`).digest('hex');
 };
 
 export const signPostData = (data, publicKey, secretKey) => {
-	const time = Math.floor(Date.now() / 1000);
+    const time = Math.floor(Date.now() / 1000);
 
-	const dataToSign = {
-		...data,
-		publicKey,
-		time
-	};
-	const hash = hashData(dataToSign, secretKey);
-	return { ...dataToSign, hash };
+    const dataToSign = {
+        ...data,
+        publicKey,
+        time
+    };
+    const hash = hashData(dataToSign, secretKey);
+    return { ...dataToSign, hash };
 };
 ```
 
@@ -115,14 +115,17 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST – errorCode
-    *   status: 400
+ERR\_INVALID\_REQUEST:
+
+*   status code: 400
+*   response:
+    *   errorCode: ‘ERR\_INVALID\_REQUEST’
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
     *   errors: In this errors object you will see what field is incorrect and why. Example:
 
 ```javascript
 {
-    "status": 400,
+	"errorCode": 'ERR_INVALID_REQUEST',
     "message": "Invalid request fields: url, description",
     "errors": {
         "url": ["Url must be a valid URL"],
@@ -131,14 +134,25 @@ Returns JSON object with following properties:
 }
 ```
 
-*   ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT – errorCode
-    *   status: 400
+ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT:
+
+*   status code: 400
+*   response:
+    *   errorCode: ‘ERR\_JOB\_CREATING\_PRINT\_JOB\_LIMIT’
     *   message: ‘Reached print limit’
-*   ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID – errorCode
-    *   status: 403
+
+ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID:
+
+*   status code: 403
+*   response:
+    *   errorCode: ‘ERR\_JOB\_CREATING\_INVALID\_PRINTER\_ID’
     *   message: ‘Invalid printer ID’
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’ 
     *   message: ‘Something wrong’
 
 ---
@@ -167,14 +181,25 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN – errorCode
-    *   status: 403
+ERR\_ACCESS\_FORBIDDEN:
+
+*   status code: 403
+*   response:
+    *   errorCode: ‘ERR\_ACCESS\_FORBIDDEN’
     *   message: ‘You are not authorized to access this job’
-*   ERR\_NOT\_FOUND – errorCode
-    *   status: 404
+
+ERR\_NOT\_FOUND:
+
+*   status code: 404
+*   response:
+    *   errorCode: ‘ERR\_NOT\_FOUND’
     *   message: ‘Job not found’
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
@@ -212,14 +237,17 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST – errorCode
-    *   status: 400
+ERR\_INVALID\_REQUEST:
+
+*   status code: 400
+*   response:
+    *   errorCode: ‘ERR\_INVALID\_REQUEST’
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
     *   errors: In this errors object you will see what fields are incorrect and why. Example:
 
 ```javascript
 {
-    "status": 400,
+    "errorCode": "ERR_INVALID_REQUEST",
     "message": "Invalid request fields: page, perPage",
     "errors": {
         "page": ["Page must be greater than or equal to 1"],
@@ -228,8 +256,11 @@ In header we are passing as well next properties:
 }
 ```
 
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
@@ -269,14 +300,25 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN – errorCode
-    *   status: 403
+ERR\_ACCESS\_FORBIDDEN:
+
+*   status code: 403
+*   response:
+    *   errorCode: ‘ERR\_ACCESS\_FORBIDDEN’
     *   message: ‘You are not authorized to access this printer’
-*   ERR\_NOT\_FOUND – errorCode
-    *   status: 404
+
+ERR\_NOT\_FOUND:
+
+*   status code: 404
+*   response:
+    *   errorCode: ‘ERR\_NOT\_FOUND’
     *   message: ‘Station not found’
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
@@ -314,14 +356,17 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST – errorCode
-    *   status: 400
+ERR\_INVALID\_REQUEST:
+
+*   status code: 400
+*   response:
+    *   errorCode: ‘ERR\_INVALID\_REQUEST’
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
     *   errors: In this errors object you will see what fields are incorrect and why. Example:
 
 ```javascript
 {
-    "status": 400,
+    "errorCode": "ERR_INVALID_REQUEST",
     "message": "Invalid request fields: page",
     "errors": {
         "page": ["Must be a number"]
@@ -329,8 +374,11 @@ In header we are passing as well next properties:
 }
 ```
 
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
@@ -375,14 +423,25 @@ Returns JSON object with following properties:
 
 **Possible errors**
 
-*   ERR\_ACCESS\_FORBIDDEN – errorCode
-    *   status: 403
+ERR\_ACCESS\_FORBIDDEN:
+
+*   status code: 403
+*   response:
+    *   errorCode: ‘ERR\_ACCESS\_FORBIDDEN’
     *   message: ‘You are not authorized to access this printer’
-*   ERR\_NOT\_FOUND – errorCode
-    *   status: 404
+
+ERR\_NOT\_FOUND:
+
+*   status code: 404
+*   response:
+    *   errorCode: ‘ERR\_NOT\_FOUND’
     *   message: ‘Printer not found’
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+
+ERR\_SOMETHING\_WRONG:
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
@@ -420,14 +479,17 @@ In header we are passing as well next properties:
 
 **Possible errors**
 
-*   ERR\_INVALID\_REQUEST – errorCode
-    *   status: 400
+ERR\_INVALID\_REQUEST
+
+*   status code: 400
+*   response:
+    *   errorCode: ‘ERR\_INVALID\_REQUEST’
     *   message: ‘Invalid request fields: ${a list of invalid fields}’
     *   errors: In this errors object you will see what fields are incorrect and why. Example:
 
 ```javascript
 {
-    "status": 400,
+    "errorCode": "ERR_INVALID_REQUEST",
     "message": "Invalid request fields: perPage",
     "errors": {
         "perPage": ["Must be a number"]
@@ -435,25 +497,33 @@ In header we are passing as well next properties:
 }
 ```
 
-*   ERR\_SOMETHING\_WRONG – errorCode
-    *   status: 500
+ERR\_SOMETHING\_WRONG :
+
+*   status code: 500
+*   response:
+    *   errorCode: ‘ERR\_SOMETHING\_WRONG’
     *   message: ‘Something wrong’
 
 ---
 
 ### General errors
 
-Errors that might occur for any api request:
+Typical structure of any error response will be like following:
 
-*   ERR\_ACCESS\_FORBIDDEN - errorCode.
-    *   status: 403
-    *   reason: You don't have access to make this request.
-*   ERR\_SOMETHING\_WRONG - errorCode.
-    *   status: 500
-    *   reason: Something went wrong.
-*   ERR\_UNAUTHORIZED - errorCode.
-    *   status: 401
-    *   reason: You are not authorized to make this request.
-*   ERR\_NOT\_FOUND - errorCode.
-    *   status: 404
-    *   reason: There is no such request.
+```javascript
+interface BaseErrorResponse {
+	errorCode: string;
+	message: string;
+}
+```
+
+Errors codes that might occur for any request:
+
+*   ERR\_ACCESS\_FORBIDDEN – appears when you don't have access to make a specific request.
+    *   status code: 403
+*   ERR\_SOMETHING\_WRONG – means that something went wrong.
+    *   status code: 500
+*   ERR\_UNAUTHORIZED – appears when you are not authorized to make a specific request.
+    *   status code: 401
+*   ERR\_NOT\_FOUND – appears when there is no such request.
+    *   status code: 404
