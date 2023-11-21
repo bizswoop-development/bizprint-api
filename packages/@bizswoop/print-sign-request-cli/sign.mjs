@@ -14,7 +14,10 @@ const hashPostData = (data, secretKey) => {
 
 export const signGetData = (queryArgs, secretKey) => {
 	queryArgs = new URLSearchParams(queryArgs);
-	queryArgs.set('time', `${Math.floor(Date.now() / 1000)}`);
+
+	if(!queryArgs.has('time')) {
+		queryArgs.set('time', `${Math.floor(Date.now() / 1000)}`);
+	}
 	const hash = hashGetData(queryArgs.toString(), secretKey);
 
 	queryArgs.set('hash', hash);
@@ -22,13 +25,12 @@ export const signGetData = (queryArgs, secretKey) => {
 };
 
 export const signPostData = (data, secretKey) => {
-	const timedData = {
-		...data,
-		time: Math.floor(Date.now() / 1000)
-	};
-	const hash = hashPostData(timedData, secretKey);
+	if (!data.hasOwnProperty("time")) {
+		data.time = Math.floor(Date.now() / 1000);
+	}
+	const hash = hashPostData(data, secretKey);
 	return {
-		...timedData,
+		...data,
 		hash
 	};
 };
