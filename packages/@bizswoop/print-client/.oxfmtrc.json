@@ -1,0 +1,50 @@
+{
+	"$schema": "../../../node_modules/oxfmt/configuration_schema.json",
+	"printWidth": 100,
+	"useTabs": true,
+	"trailingComma": "all",
+	"singleQuote": true,
+	"sortPackageJson": false,
+	"sortImports": {
+		"customGroups": [
+			{
+				"groupName": "bizswoop",
+				"elementNamePattern": ["@bizswoop/**"]
+			},
+			{
+				"groupName": "entry",
+				"elementNamePattern": ["#@/index.ts", "#@/PrintClient.ts"]
+			},
+			{
+				"groupName": "resources",
+				"elementNamePattern": ["#@/resources/**"]
+			},
+			{
+				"groupName": "utilities",
+				"elementNamePattern": ["#@/utilities/**"]
+			},
+			{
+				"groupName": "errors",
+				"elementNamePattern": ["#@/errors/**"]
+			},
+			{
+				"groupName": "root",
+				"elementNamePattern": ["#~/**"]
+			}
+		],
+		"groups": [
+			"builtin",
+			"external",
+			"bizswoop",
+			"entry",
+			"resources",
+			"utilities",
+			"errors",
+			"internal",
+			"root",
+			["sibling", "index"],
+			"unknown"
+		]
+	},
+	"ignorePatterns": ["dist", "node_modules", "package-lock.json"]
+}

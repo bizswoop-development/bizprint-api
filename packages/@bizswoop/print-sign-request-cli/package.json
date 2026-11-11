@@ -1,13 +1,20 @@
 {
 	"name": "@bizswoop/print-sign-request-cli",
 	"license": "MIT",
-	"version": "1.1.0",
-	"bin": "prepareRequest.mjs",
+	"version": "2.0.0",
+	"type": "module",
+	"bin": "prepareRequest.js",
+	"files": [
+		"prepareRequest.js"
+	],
 	"publishConfig": {
 		"access": "public"
 	},
+	"engines": {
+		"node": ">=20.19"
+	},
 	"dependencies": {
-		"inquirer": "^8.2.4",
-		"@bizswoop/print-client": "^1.0.0"
+		"@bizswoop/print-client": "^2.0.0",
+		"inquirer": "^8.2.4"
 	}
 }

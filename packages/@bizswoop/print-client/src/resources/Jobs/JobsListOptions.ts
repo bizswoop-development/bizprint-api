@@ -1,7 +1,7 @@
-import { ApiListOptionsInFilter } from '@/utilities/ApiListOptionsInFilter';
-import { ApiListOptionsPagination } from '@/utilities/ApiListOptionsPagination';
+import type { ApiListOptionsInFilter } from '#@/utilities/ApiListOptionsInFilter.ts';
+import type { ApiListOptionsPagination } from '#@/utilities/ApiListOptionsPagination.ts';
 
-import { JobStatus } from './Job';
+import type { JobStatus } from './Job.ts';
 
 export type JobsListOptions = ApiListOptionsPagination &
 	(JobsListOptionsDate | JobsListOptionsId | JobsListOptionsStatus | {});

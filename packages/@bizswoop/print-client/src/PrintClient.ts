@@ -1,11 +1,13 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 
-import Jobs from '@/resources/Jobs';
-import Printers from '@/resources/Printers';
-import Stations from '@/resources/Stations';
+import Jobs from '#@/resources/Jobs/index.ts';
+import Printers from '#@/resources/Printers/index.ts';
+import Stations from '#@/resources/Stations/index.ts';
 
-import { signGetData } from '@/sign/signGetData';
-import { signPostData } from '@/sign/signPostData';
+import { serializeParams } from '#@/utilities/serializeParams.ts';
+
+import { signGetData } from '#@/sign/signGetData.ts';
+import { signPostData } from '#@/sign/signPostData.ts';
 
 interface PrintClientAuthConfig {
 	publicKey: string;
@@ -35,11 +37,12 @@ export default class PrintClient {
 	constructor(config: PrintClientConfig) {
 		this._auth = {
 			publicKey: config.publicKey,
-			secretKey: config.secretKey
+			secretKey: config.secretKey,
 		};
 
 		this._httpClient = axios.create({
-			baseURL: config.baseUrl || defaultBaseUrl
+			baseURL: config.baseUrl || defaultBaseUrl,
+			paramsSerializer: { serialize: serializeParams },
 		});
 
 		this._setupInterceptors();
@@ -56,7 +59,7 @@ export default class PrintClient {
 					const signedUrlParams = signGetData(
 						url.searchParams,
 						this._auth.publicKey,
-						this._auth.secretKey
+						this._auth.secretKey,
 					);
 					config.params.publicKey = signedUrlParams.get('publicKey');
 					config.params.time = signedUrlParams.get('time');
@@ -71,7 +74,7 @@ export default class PrintClient {
 					const { hash, time } = signPostData(
 						config.data,
 						this._auth.publicKey,
-						this._auth.secretKey
+						this._auth.secretKey,
 					);
 					config.data.time = time;
 					config.data.hash = hash;

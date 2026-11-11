@@ -1,24 +1,16 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "baseUrl": "src",
-    "outDir": "lib",
-    "declaration": true,
-    "target": "ES2015",
-    "lib": [
-      "es2015",
-      "es2018.asynciterable"
-    ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    }
-  },
-  "exclude": [
-    "jest.config.ts"
-  ],
-  "types": [
-    "node"
-  ]
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2022"],
+		"types": ["node"],
+		"strict": false,
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	},
+	"include": ["src"]
 }

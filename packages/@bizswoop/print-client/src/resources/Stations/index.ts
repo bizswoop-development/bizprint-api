@@ -1,28 +1,31 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 
-import { ApiListPromise } from '@/utilities/ApiListPromise';
-import { ApiResponsePromise } from '@/utilities/ApiResponsePromise';
-import makeRequest from '@/utilities/makeRequest';
-import { wrapAsyncList } from '@/utilities/wrapAsyncList';
-import { wrapListResponse } from '@/utilities/wrapListResponse';
-import { wrapResponse } from '@/utilities/wrapResponse';
+import type { ApiListPromise } from '#@/utilities/ApiListPromise.ts';
+import type { ApiResponsePromise } from '#@/utilities/ApiResponsePromise.ts';
+import makeRequest from '#@/utilities/makeRequest.ts';
+import { wrapAsyncList } from '#@/utilities/wrapAsyncList.ts';
+import { wrapListResponse } from '#@/utilities/wrapListResponse.ts';
+import { wrapResponse } from '#@/utilities/wrapResponse.ts';
 
-import StationsListInvalidRequestError from './errors/StationsListInvalidRequestError';
-import { ErrorResponse } from '@/errors/ErrorResponse';
-import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
+import type { ErrorResponse } from '#@/errors/ErrorResponse.ts';
+import { InvalidRequestErrorCode } from '#@/errors/InvalidRequestError.ts';
 
-import { Station } from './Station';
-import { StationsListOptions } from './StationsListOptions';
+import StationsListInvalidRequestError from './errors/StationsListInvalidRequestError.ts';
+import type { Station } from './Station.ts';
+import type { StationsListOptions } from './StationsListOptions.ts';
 
 export default class Stations {
 	protected _resourceBaseUrl = 'stations';
 
-	public constructor(_, protected _httpClient: AxiosInstance) {}
+	public constructor(
+		_,
+		protected _httpClient: AxiosInstance,
+	) {}
 
 	async retrieve(id: number): ApiResponsePromise<Station> {
 		const response = await makeRequest(this._httpClient, this._resourceBaseUrl, {
 			method: 'GET',
-			url: `${id}`
+			url: `${id}`,
 		});
 
 		return wrapResponse(response, response.data.data as Station);
@@ -34,9 +37,9 @@ export default class Stations {
 			this._resourceBaseUrl,
 			{
 				method: 'GET',
-				params: options
+				params: options,
 			},
-			this._listError
+			this._listError,
 		).then((response) => {
 			const printers = response.data.data as Station[];
 			return wrapListResponse(response, printers);
@@ -48,9 +51,9 @@ export default class Stations {
 				this._resourceBaseUrl,
 				{
 					method: 'GET',
-					params: options
+					params: options,
 				},
-				this._listError
+				this._listError,
 			).then((response) => {
 				const printers = response.data.data as Station[];
 				return wrapListResponse(response, printers);
@@ -63,7 +66,7 @@ export default class Stations {
 	private _listError(error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
-			switch (data.errorCode) {
+			switch (data?.errorCode) {
 				case InvalidRequestErrorCode:
 					throw new StationsListInvalidRequestError(data.message, data.errors);
 				default:

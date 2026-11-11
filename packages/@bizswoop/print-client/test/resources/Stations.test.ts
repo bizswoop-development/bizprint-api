@@ -1,10 +1,12 @@
-import PrintClient from '@/PrintClient';
+import { describe, it, expect } from 'vitest';
+
+import PrintClient from '#@/PrintClient.ts';
 
 describe('Stations', () => {
 	const client = new PrintClient({
 		publicKey: 'c321430d35c6d425799db9f85a11d50b',
 		secretKey: '321430d35c6d425799db9f85a11d50b0',
-		baseUrl: 'http://localhost:8000/api/connect-application/v1/'
+		baseUrl: 'http://localhost:8000/api/connect-application/v1/',
 	});
 
 	it('should create an instance', () => {
@@ -30,7 +32,7 @@ describe('Stations', () => {
 	it('should fetch all stations filtering, created at string', async () => {
 		let allStations = [];
 		for await (let stations of client.Stations.list({
-			createdAt: { gte: '2022-04-21T20:40:00.000Z' }
+			createdAt: { gte: '2022-04-21T20:40:00.000Z' },
 		})) {
 			allStations = allStations.concat(stations.data);
 		}
@@ -41,7 +43,7 @@ describe('Stations', () => {
 	it('should fetch all stations filtering, created at date', async () => {
 		let allStations = [];
 		for await (let stations of client.Stations.list({
-			createdAt: { gte: new Date('2022-04-21T20:40:00.000Z') }
+			createdAt: { gte: new Date('2022-04-21T20:40:00.000Z') },
 		})) {
 			allStations = allStations.concat(stations.data);
 		}

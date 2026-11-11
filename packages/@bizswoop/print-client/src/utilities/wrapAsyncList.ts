@@ -1,10 +1,10 @@
-import { ApiList } from '@/utilities/ApiList';
-import { ApiListOptionsPagination } from '@/utilities/ApiListOptionsPagination';
+import type { ApiList } from '#@/utilities/ApiList.ts';
+import type { ApiListOptionsPagination } from '#@/utilities/ApiListOptionsPagination.ts';
 
 export const wrapAsyncList = <T extends ApiList<any>, Q extends ApiListOptionsPagination>(
 	firstValue: Promise<T>,
 	options: Q,
-	nextValueCallback: (options: Q) => Promise<T>
+	nextValueCallback: (options: Q) => Promise<T>,
 ): AsyncIterableIterator<T> => {
 	let firstCall = true;
 	let done = false;
@@ -20,7 +20,7 @@ export const wrapAsyncList = <T extends ApiList<any>, Q extends ApiListOptionsPa
 
 			const result = {
 				done,
-				value
+				value,
 			};
 
 			if (!value.hasMore) {
@@ -31,7 +31,7 @@ export const wrapAsyncList = <T extends ApiList<any>, Q extends ApiListOptionsPa
 
 			return result;
 		},
-		[Symbol.asyncIterator]: () => iterator
+		[Symbol.asyncIterator]: () => iterator,
 	};
 
 	return iterator;

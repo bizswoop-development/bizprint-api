@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 import inquirer from 'inquirer';
-import { signPostData, signGetData } from './sign.mjs';
+import { hashGetData } from '@bizswoop/print-client/sign/signGetData.js';
+import { hashPostData } from '@bizswoop/print-client/sign/signPostData.js';
+
+const now = () => Math.floor(Date.now() / 1000);
 
 const { action } = await inquirer
 	.prompt(
@@ -74,9 +77,10 @@ switch (action) {
 
 		url.set('publicKey', publicKey);
 
-		const result = signGetData(url, secretKey);
+		if (!url.has('time')) url.set('time', `${now()}`);
+		url.set('hash', hashGetData(url, secretKey));
 
-		console.log(result);
+		console.log(url.toString());
 		process.exit(0);
 		break;
 	}
@@ -118,7 +122,8 @@ switch (action) {
 
 		json.publicKey = publicKey;
 
-		const result = signPostData(json, secretKey);
+		if (!Object.hasOwn(json, 'time')) json.time = now();
+		const result = { ...json, hash: hashPostData(json, secretKey) };
 
 		console.log(JSON.stringify(result));
 		process.exit(0);
@@ -170,11 +175,10 @@ switch (action) {
 
 		url.delete('hash');
 
-		const signedUrl = new URLSearchParams(signGetData(url, secretKey));
-		const result = signedUrl.get('hash') === originalUrl.get('hash');
+		const expectedHash = hashGetData(url, secretKey);
+		const result = expectedHash === originalUrl.get('hash');
 
-
-		console.log(result ? 'Valid' : `Invalid (hash mismatch), expected ${signedUrl.get('hash')} got ${originalUrl.get('hash')}`);
+		console.log(result ? 'Valid' : `Invalid (hash mismatch), expected ${expectedHash} got ${originalUrl.get('hash')}`);
 		process.exit(0);
 		break;
 	}
@@ -218,11 +222,10 @@ switch (action) {
 		const json = { ...originalJson };
 		delete json.hash;
 
-		const signedJson = signPostData(json, secretKey);
+		const expectedHash = hashPostData(json, secretKey);
+		const result = expectedHash === originalJson.hash;
 
-		const result = signedJson.hash === originalJson.hash;
-
-		console.log(result ? 'Valid' : `Invalid (hash mismatch), expected ${signedJson.hash} got ${originalJson.hash}`);
+		console.log(result ? 'Valid' : `Invalid (hash mismatch), expected ${expectedHash} got ${originalJson.hash}`);
 		process.exit(0);
 		break;
 	}

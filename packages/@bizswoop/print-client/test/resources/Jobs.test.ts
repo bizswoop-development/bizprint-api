@@ -1,16 +1,21 @@
-import JobCreatingInvalidPrinterError from './errors/JobCreatingInvalidPrinterError';
-import JobCreatingInvalidRequestError from './errors/JobCreatingInvalidRequestError';
-import JobCreatingPrintJobLimitError from './errors/JobCreatingPrintJobLimitError';
-import AccessForbiddenError from '@/errors/AccessForbiddenError';
-import NotFoundError from '@/errors/NotFoundError';
+import { describe, it, expect } from 'vitest';
 
-import PrintClient from '@/PrintClient';
+import PrintClient from '#@/PrintClient.ts';
+
+import JobCreatingInvalidPrinterError from '#@/resources/Jobs/errors/JobCreatingInvalidPrinterError.ts';
+import JobCreatingInvalidRequestError from '#@/resources/Jobs/errors/JobCreatingInvalidRequestError.ts';
+import JobCreatingPrintJobLimitError from '#@/resources/Jobs/errors/JobCreatingPrintJobLimitError.ts';
+
+import AccessForbiddenError from '#@/errors/AccessForbiddenError.ts';
+import NotFoundError from '#@/errors/NotFoundError.ts';
+
+import { catchError } from '#~/test/helpers.ts';
 
 describe('Jobs', () => {
 	const client = new PrintClient({
 		publicKey: 'c321430d35c6d425799db9f85a11d50b',
 		secretKey: '321430d35c6d425799db9f85a11d50b0',
-		baseUrl: 'http://localhost:8000/api/connect-application/v1/'
+		baseUrl: 'http://localhost:8000/api/connect-application/v1/',
 	});
 
 	it('should create an instance', () => {
@@ -59,7 +64,7 @@ describe('Jobs', () => {
 	it('should fetch all jobs filtering, multiple status done and failed', async () => {
 		let allJobs = [];
 		for await (let jobs of client.Jobs.list({
-			status: { in: ['done', 'processing'] }
+			status: { in: ['done', 'processing'] },
 		})) {
 			allJobs = allJobs.concat(jobs.data);
 		}
@@ -70,7 +75,7 @@ describe('Jobs', () => {
 	it('should fetch all jobs filtering, multiple status not done', async () => {
 		let allJobs = [];
 		for await (let jobs of client.Jobs.list({
-			status: { notIn: 'done' }
+			status: { notIn: 'done' },
 		})) {
 			allJobs = allJobs.concat(jobs.data);
 		}
@@ -81,7 +86,7 @@ describe('Jobs', () => {
 	it('should fetch all jobs filtering, multiple status not done and connecting-to-printer', async () => {
 		let allJobs = [];
 		for await (let jobs of client.Jobs.list({
-			status: { notIn: ['done', 'connecting-to-printer'] }
+			status: { notIn: ['done', 'connecting-to-printer'] },
 		})) {
 			allJobs = allJobs.concat(jobs.data);
 		}
@@ -92,7 +97,7 @@ describe('Jobs', () => {
 	it('should fetch all jobs filtering, created at string', async () => {
 		let allJobs = [];
 		for await (let jobs of client.Jobs.list({
-			createdAt: { gte: '2022-04-21T19:25:00.000Z' }
+			createdAt: { gte: '2022-04-21T19:25:00.000Z' },
 		})) {
 			allJobs = allJobs.concat(jobs.data);
 		}
@@ -103,7 +108,7 @@ describe('Jobs', () => {
 	it('should fetch all jobs filtering, created at date', async () => {
 		let allJobs = [];
 		for await (let jobs of client.Jobs.list({
-			createdAt: { gte: new Date('2022-04-21T19:25:00.000Z') }
+			createdAt: { gte: new Date('2022-04-21T19:25:00.000Z') },
 		})) {
 			allJobs = allJobs.concat(jobs.data);
 		}
@@ -124,30 +129,30 @@ describe('Jobs', () => {
 	});
 
 	it('should fail to fetch job, not found', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Jobs.retrieve(200);
-		} catch (error) {
-			expect(error).toBeInstanceOf(NotFoundError);
-			expect(error.name).toBe('NotFoundError');
-			expect(error.message).toBe('Job not found');
-		}
+		});
+
+		expect(error).toBeInstanceOf(NotFoundError);
+		expect(error.name).toBe('NotFoundError');
+		expect(error.message).toBe('Job not found');
 	});
 
 	it('should fail to fetch job, access forbidden', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Jobs.retrieve(35);
-		} catch (error) {
-			expect(error).toBeInstanceOf(AccessForbiddenError);
-			expect(error.name).toBe('AccessForbiddenError');
-			expect(error.message).toBe('You are not authorized to access this job');
-		}
+		});
+
+		expect(error).toBeInstanceOf(AccessForbiddenError);
+		expect(error.name).toBe('AccessForbiddenError');
+		expect(error.message).toBe('You are not authorized to access this job');
 	});
 
 	it('should create job', async () => {
 		const job = await client.Jobs.create({
 			printerId: 1,
 			description: 'Test job',
-			url: 'https://localhost:8000/order/35'
+			url: 'https://localhost:8000/order/35',
 		});
 
 		expect(job).toBeTruthy();
@@ -159,103 +164,103 @@ describe('Jobs', () => {
 	});
 
 	it('should fail create job, invalid printer (access error)', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Jobs.create({
-				printerId: 14,
+				printerId: 15,
 				description: 'Test job',
-				url: 'https://localhost:8000/order/35'
+				url: 'https://localhost:8000/order/35',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidPrinterError);
-			expect(error.name).toBe('JobCreatingInvalidPrinterError');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidPrinterError);
+		expect(error.name).toBe('JobCreatingInvalidPrinterError');
 	});
 
 	it('should fail create job, invalid printer (not error)', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Jobs.create({
 				printerId: 4000,
 				description: 'Test job',
-				url: 'https://localhost:8000/order/35'
+				url: 'https://localhost:8000/order/35',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidPrinterError);
-			expect(error.name).toBe('JobCreatingInvalidPrinterError');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidPrinterError);
+		expect(error.name).toBe('JobCreatingInvalidPrinterError');
 	});
 
 	it('should fail create job, invalid url', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Jobs.create({
 				printerId: 1,
 				description: 'Test job',
-				url: 'invalid url'
+				url: 'invalid url',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
-			expect(error.name).toBe('JobCreatingInvalidRequestError');
-			expect(error.errors).toHaveProperty('url');
-			expect(error.errors.url).toContain('Url must be a valid URL');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
+		expect(error.name).toBe('JobCreatingInvalidRequestError');
+		expect(error.errors).toHaveProperty('url');
+		expect(error.errors.url).toContain('Url must be a valid URL');
 	});
 
 	it('should fail create job, required url', async () => {
-		try {
+		const error = await catchError(async () => {
 			// @ts-ignore
 			await client.Jobs.create({
 				printerId: 1,
-				description: 'Test job'
+				description: 'Test job',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
-			expect(error.name).toBe('JobCreatingInvalidRequestError');
-			expect(error.errors).toHaveProperty('url');
-			expect(error.errors.url).toContain('Url is a required field');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
+		expect(error.name).toBe('JobCreatingInvalidRequestError');
+		expect(error.errors).toHaveProperty('url');
+		expect(error.errors.url).toContain('Url is a required field');
 	});
 
 	it('should fail create job, required printerId', async () => {
-		try {
+		const error = await catchError(async () => {
 			// @ts-ignore
 			await client.Jobs.create({
 				description: 'Test job',
-				url: 'https://localhost:8000/order/35'
+				url: 'https://localhost:8000/order/35',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
-			expect(error.name).toBe('JobCreatingInvalidRequestError');
-			expect(error.errors).toHaveProperty('printerId');
-			expect(error.errors.printerId).toContain('Printer ID is a required field');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
+		expect(error.name).toBe('JobCreatingInvalidRequestError');
+		expect(error.errors).toHaveProperty('printerId');
+		expect(error.errors.printerId).toContain('Printer ID is a required field');
 	});
 
 	it('should fail create job, required description', async () => {
-		try {
+		const error = await catchError(async () => {
 			// @ts-ignore
 			await client.Jobs.create({
 				printerId: 1,
-				url: 'https://localhost:8000/order/35'
+				url: 'https://localhost:8000/order/35',
 			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
-			expect(error.name).toBe('JobCreatingInvalidRequestError');
-			expect(error.errors).toHaveProperty('description');
-			expect(error.errors.description).toContain('Description is a required field');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingInvalidRequestError);
+		expect(error.name).toBe('JobCreatingInvalidRequestError');
+		expect(error.errors).toHaveProperty('description');
+		expect(error.errors.description).toContain('Description is a required field');
 	});
 
 	it('should fail create job, print limit exceeded', async () => {
-		try {
+		const error = await catchError(async () => {
 			for (let i = 0; i <= 60; i++) {
 				await client.Jobs.create({
 					printerId: 1,
 					description: `Test job ${i}`,
-					url: `https://localhost:8000/order/test-${i}`
+					url: `https://localhost:8000/order/test-${i}`,
 				});
 			}
-		} catch (error) {
-			expect(error).toBeInstanceOf(JobCreatingPrintJobLimitError);
-			expect(error.name).toBe('JobCreatingPrintJobLimitError');
-		}
+		});
+
+		expect(error).toBeInstanceOf(JobCreatingPrintJobLimitError);
+		expect(error.name).toBe('JobCreatingPrintJobLimitError');
 	});
 });

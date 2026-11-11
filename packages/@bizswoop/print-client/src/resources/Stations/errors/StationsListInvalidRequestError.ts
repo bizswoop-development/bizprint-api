@@ -1,7 +1,7 @@
-import { PrintersListOptions } from '@/resources/Printers/PrintersListOptions';
+import type { StationsListOptions } from '#@/resources/Stations/StationsListOptions.ts';
 
-import { InvalidRequestError } from '@/errors/InvalidRequestError';
+import { InvalidRequestError } from '#@/errors/InvalidRequestError.ts';
 
-export default class StationsListInvalidRequestError extends InvalidRequestError<PrintersListOptions> {
+export default class StationsListInvalidRequestError extends InvalidRequestError<StationsListOptions> {
 	name = 'StationsListInvalidRequestError';
 }

@@ -1,7 +1,7 @@
-import { BaseErrorResponse } from '@/errors/ErrorResponse';
+import type { BaseErrorResponse } from '#@/errors/ErrorResponse.ts';
 
-import { JobCreatingInvalidPrinterErrorCode } from './JobCreatingInvalidPrinterError';
-import { JobCreatingPrintJobLimitErrorCode } from './JobCreatingPrintJobLimitError';
+import { JobCreatingInvalidPrinterErrorCode } from './JobCreatingInvalidPrinterError.ts';
+import { JobCreatingPrintJobLimitErrorCode } from './JobCreatingPrintJobLimitError.ts';
 
 export type JobCreatingErrorResponse =
 	| JobCreatingPrintJobLimitErrorResponse

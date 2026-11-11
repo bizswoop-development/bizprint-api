@@ -1,10 +1,13 @@
-import { JobCreatingErrorResponse } from '@/resources/Jobs/errors/JobCreatingErrorResponse';
+import type { JobCreatingErrorResponse } from '#@/resources/Jobs/errors/JobCreatingErrorResponse.ts';
 
-import { AccessForbiddenErrorCode } from '@/errors/AccessForbiddenError';
-import { InvalidRequestErrorCode, InvalidRequestErrorsInfo } from '@/errors/InvalidRequestError';
-import { NotFoundErrorCode } from '@/errors/NotFoundError';
-import { SomethingWrongErrorCode } from '@/errors/SomethingWrongError';
-import { UnauthorizedErrorCode } from '@/errors/UnauthorizedError';
+import { AccessForbiddenErrorCode } from '#@/errors/AccessForbiddenError.ts';
+import {
+	InvalidRequestErrorCode,
+	type InvalidRequestErrorsInfo,
+} from '#@/errors/InvalidRequestError.ts';
+import { NotFoundErrorCode } from '#@/errors/NotFoundError.ts';
+import { SomethingWrongErrorCode } from '#@/errors/SomethingWrongError.ts';
+import { UnauthorizedErrorCode } from '#@/errors/UnauthorizedError.ts';
 
 export type ErrorResponse =
 	| InvalidRequestErrorResponse

@@ -1,0 +1,17 @@
+{
+	"$schema": "../../../node_modules/oxlint/configuration_schema.json",
+	"ignorePatterns": ["dist"],
+	"rules": {
+		"no-restricted-imports": [
+			"error",
+			{
+				"patterns": [
+					{
+						"group": ["../*", "**/../*"],
+						"message": "Use the #@/ (src) or #~/ (package root) alias instead of a parent-relative path."
+					}
+				]
+			}
+		]
+	}
+}

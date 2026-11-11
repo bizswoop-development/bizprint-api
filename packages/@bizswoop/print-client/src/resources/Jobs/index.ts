@@ -1,43 +1,46 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 
-import { ApiListPromise } from '@/utilities/ApiListPromise';
-import { ApiResponsePromise } from '@/utilities/ApiResponsePromise';
-import makeRequest from '@/utilities/makeRequest';
-import { wrapAsyncList } from '@/utilities/wrapAsyncList';
-import { wrapListResponse } from '@/utilities/wrapListResponse';
-import { wrapResponse } from '@/utilities/wrapResponse';
+import type { ApiListPromise } from '#@/utilities/ApiListPromise.ts';
+import type { ApiResponsePromise } from '#@/utilities/ApiResponsePromise.ts';
+import makeRequest from '#@/utilities/makeRequest.ts';
+import { wrapAsyncList } from '#@/utilities/wrapAsyncList.ts';
+import { wrapListResponse } from '#@/utilities/wrapListResponse.ts';
+import { wrapResponse } from '#@/utilities/wrapResponse.ts';
+
+import type { ErrorResponse } from '#@/errors/ErrorResponse.ts';
+import { InvalidRequestErrorCode } from '#@/errors/InvalidRequestError.ts';
 
 import JobCreatingInvalidPrinterError, {
-	JobCreatingInvalidPrinterErrorCode
-} from './errors/JobCreatingInvalidPrinterError';
-import JobCreatingInvalidRequestError from './errors/JobCreatingInvalidRequestError';
+	JobCreatingInvalidPrinterErrorCode,
+} from './errors/JobCreatingInvalidPrinterError.ts';
+import JobCreatingInvalidRequestError from './errors/JobCreatingInvalidRequestError.ts';
 import JobCreatingPrintJobLimitError, {
-	JobCreatingPrintJobLimitErrorCode
-} from './errors/JobCreatingPrintJobLimitError';
-import JobsListInvalidRequestError from './errors/JobsListInvalidRequestError';
-import { ErrorResponse } from '@/errors/ErrorResponse';
-import { InvalidRequestErrorCode } from '@/errors/InvalidRequestError';
-
-import { Job } from './Job';
-import { JobCreateData } from './JobCreateData';
-import { JobsListOptions } from './JobsListOptions';
+	JobCreatingPrintJobLimitErrorCode,
+} from './errors/JobCreatingPrintJobLimitError.ts';
+import JobsListInvalidRequestError from './errors/JobsListInvalidRequestError.ts';
+import type { Job } from './Job.ts';
+import type { JobCreateData } from './JobCreateData.ts';
+import type { JobsListOptions } from './JobsListOptions.ts';
 
 export default class Jobs {
 	protected _resourceBaseUrl = 'jobs';
 
-	public constructor(_, protected _httpClient: AxiosInstance) {}
+	public constructor(
+		_,
+		protected _httpClient: AxiosInstance,
+	) {}
 
 	async create(data: JobCreateData): ApiResponsePromise<Job> {
 		const { printOption, ...rest } = data;
 		const parsedData = {
 			...rest,
-			printOption: printOption ? JSON.stringify(printOption) : undefined
+			printOption: printOption ? JSON.stringify(printOption) : undefined,
 		};
 
 		try {
 			const response = await makeRequest(this._httpClient, this._resourceBaseUrl, {
 				method: 'POST',
-				data: parsedData
+				data: parsedData,
 			});
 
 			return wrapResponse(response, response.data.data as Job);
@@ -45,7 +48,7 @@ export default class Jobs {
 			if (axios.isAxiosError(error)) {
 				const data = error.response?.data as ErrorResponse;
 
-				switch (data.errorCode) {
+				switch (data?.errorCode) {
 					case InvalidRequestErrorCode: {
 						throw new JobCreatingInvalidRequestError(data.message, data.errors);
 					}
@@ -67,7 +70,7 @@ export default class Jobs {
 	async retrieve(id: number): ApiResponsePromise<Job> {
 		const response = await makeRequest(this._httpClient, this._resourceBaseUrl, {
 			method: 'GET',
-			url: `${id}`
+			url: `${id}`,
 		});
 
 		return wrapResponse(response, response.data.data as Job);
@@ -79,9 +82,9 @@ export default class Jobs {
 			this._resourceBaseUrl,
 			{
 				method: 'GET',
-				params: options
+				params: options,
 			},
-			this._listError
+			this._listError,
 		).then((response) => {
 			const jobs = response.data.data as Job[];
 			return wrapListResponse(response, jobs);
@@ -93,9 +96,9 @@ export default class Jobs {
 				this._resourceBaseUrl,
 				{
 					method: 'GET',
-					params: options
+					params: options,
 				},
-				this._listError
+				this._listError,
 			).then((response) => {
 				const jobs = response.data.data as Job[];
 				return wrapListResponse(response, jobs);
@@ -108,7 +111,7 @@ export default class Jobs {
 	private _listError(error) {
 		if (axios.isAxiosError(error)) {
 			const data = error.response?.data as ErrorResponse;
-			switch (data.errorCode) {
+			switch (data?.errorCode) {
 				case InvalidRequestErrorCode:
 					throw new JobsListInvalidRequestError(data.message, data.errors);
 				default:

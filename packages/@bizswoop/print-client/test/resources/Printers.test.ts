@@ -1,14 +1,19 @@
-import PrintersListInvalidRequestError from './errors/PrintersListInvalidRequestError';
-import AccessForbiddenError from '@/errors/AccessForbiddenError';
-import NotFoundError from '@/errors/NotFoundError';
+import { describe, it, expect } from 'vitest';
 
-import PrintClient from '@/PrintClient';
+import PrintClient from '#@/PrintClient.ts';
+
+import PrintersListInvalidRequestError from '#@/resources/Printers/errors/PrintersListInvalidRequestError.ts';
+
+import AccessForbiddenError from '#@/errors/AccessForbiddenError.ts';
+import NotFoundError from '#@/errors/NotFoundError.ts';
+
+import { catchError } from '#~/test/helpers.ts';
 
 describe('Printers', () => {
 	const client = new PrintClient({
 		publicKey: 'c321430d35c6d425799db9f85a11d50b',
 		secretKey: '321430d35c6d425799db9f85a11d50b0',
-		baseUrl: 'http://localhost:8000/api/connect-application/v1/'
+		baseUrl: 'http://localhost:8000/api/connect-application/v1/',
 	});
 	it('should create an instance', () => {
 		expect(client.Printers).toBeTruthy();
@@ -96,18 +101,18 @@ describe('Printers', () => {
 	});
 
 	it('should fail fetch printers, station id by in and notIn at the same time', async () => {
-		try {
+		const error = await catchError(async () => {
 			let allPrinters = [];
 			// @ts-ignore
 			for await (const printers of client.Printers.list({ stationId: { in: [2], notIn: [1] } })) {
 				allPrinters = allPrinters.concat(printers.data);
 			}
-		} catch (error) {
-			expect(error).toBeInstanceOf(PrintersListInvalidRequestError);
-			expect(error.name).toBe('PrintersListInvalidRequestError');
-			expect(error.errors).toHaveProperty('stationId');
-			expect(error.errors.stationId).toContain('You can\'t use "in" and "notIn" at the same time');
-		}
+		});
+
+		expect(error).toBeInstanceOf(PrintersListInvalidRequestError);
+		expect(error.name).toBe('PrintersListInvalidRequestError');
+		expect(error.errors).toHaveProperty('stationId');
+		expect(error.errors.stationId).toContain('You can\'t use "in" and "notIn" at the same time');
 	});
 
 	it('should fetch printers pagination by promise, page 2', async () => {
@@ -123,7 +128,7 @@ describe('Printers', () => {
 	it('should fetch all printers filtering, created at string', async () => {
 		let allPrinters = [];
 		for await (let printers of client.Printers.list({
-			createdAt: { gte: '2022-05-10T17:23:12.000Z' }
+			createdAt: { gte: '2022-05-10T17:23:12.000Z' },
 		})) {
 			allPrinters = allPrinters.concat(printers.data);
 		}
@@ -134,7 +139,7 @@ describe('Printers', () => {
 	it('should fetch all printers filtering, created at date', async () => {
 		let allPrinters = [];
 		for await (let printers of client.Printers.list({
-			createdAt: { gte: new Date('2022-05-10T17:23:12.000Z') }
+			createdAt: { gte: new Date('2022-05-10T17:23:12.000Z') },
 		})) {
 			allPrinters = allPrinters.concat(printers.data);
 		}
@@ -151,21 +156,21 @@ describe('Printers', () => {
 	});
 
 	it('should fail fetch specific printer, printer not found', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Printers.retrieve(500);
-		} catch (error) {
-			expect(error).toBeInstanceOf(NotFoundError);
-			expect(error.name).toBe('NotFoundError');
-		}
+		});
+
+		expect(error).toBeInstanceOf(NotFoundError);
+		expect(error.name).toBe('NotFoundError');
 	});
 
 	it('should fail fetch specific printer, access forbidden', async () => {
-		try {
+		const error = await catchError(async () => {
 			await client.Printers.retrieve(15);
-		} catch (error) {
-			expect(error).toBeInstanceOf(AccessForbiddenError);
-			expect(error.name).toBe('AccessForbiddenError');
-		}
+		});
+
+		expect(error).toBeInstanceOf(AccessForbiddenError);
+		expect(error.name).toBe('AccessForbiddenError');
 	});
 });
 
@@ -181,8 +186,8 @@ function checkPrinterFields(printer) {
 
 			station: expect.objectContaining({
 				id: expect.any(Number),
-				name: expect.any(String)
-			})
-		})
+				name: expect.any(String),
+			}),
+		}),
 	);
 }

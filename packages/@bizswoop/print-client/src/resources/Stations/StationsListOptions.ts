@@ -1,4 +1,4 @@
-import { ApiListOptionsPagination } from '@/utilities/ApiListOptionsPagination';
+import type { ApiListOptionsPagination } from '#@/utilities/ApiListOptionsPagination.ts';
 
 export type StationsListOptions = ApiListOptionsPagination &
 	(StationsListOptionsId | StationsListOptionsDate | {});
